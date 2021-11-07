@@ -7,11 +7,13 @@ import express, {
 } from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-import logger from './lib/logger';
-import { expensesRouter } from './routes';
+import getLogger from './lib/getLogger';
+import { expensesRouter, usersRouter } from './routes';
+import errorHandler from './middleware/errorHandler';
 
 const app: Express = express();
 const allowedOrigin = process.env.ALLOWED_ORIGIN;
+const logger = getLogger('server');
 logger.debug(`Access Control Allow Origin: ${allowedOrigin}`);
 app.use(cors({
   origin: allowedOrigin,
@@ -30,12 +32,14 @@ const apiPrefix = process.env.API_PREFIX;
 logger.debug(`API prefix is "${apiPrefix}"`);
 
 app.use(`${apiPrefix}/expenses`, expensesRouter);
+app.use(`${apiPrefix}/users`, usersRouter);
 
 const logRequestError = (req: Request, res: Response, next: NextFunction) => {
   logger.error(`${req.method} ${req.originalUrl} route not found`);
   next();
 };
 app.use(logRequestError);
+app.use(errorHandler);
 
 const httpServer = http.createServer(app);
 const port = process.env.HTTP_PORT;
