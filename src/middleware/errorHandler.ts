@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 
 const logger = getLogger("server");
 
-class CustomError extends Error {
+export class CustomError extends Error {
   status: number;
   constructor(message: string, status = 500) {
     super(message);

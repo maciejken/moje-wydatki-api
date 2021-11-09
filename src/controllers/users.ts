@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { UserAttributes } from "model/user.model";
-import { checkPassword, createUser, findUsers } from "../services/users";
+import { createUser, findUsers } from "../services/users";
 
 export const getUsers = async (req: Request, res: Response) => {
   const userData = await findUsers();
@@ -19,11 +19,4 @@ export const addUser = async (req: Request, res: Response, next: NextFunction) =
       res.status(201).json({ id, username, createdAt, updatedAt });
     })
     .catch(next);
-}
-
-export const checkUserPass = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const isCorrectPassword = await checkPassword(userId as string, req.query.password as string);
-  const statusCode = isCorrectPassword ? 200 : 401;
-  res.status(statusCode).json({ userId, isCorrectPassword, statusCode });
 }

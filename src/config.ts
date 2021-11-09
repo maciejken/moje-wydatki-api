@@ -1,3 +1,6 @@
+import 'dotenv/config';
+
+export const ROOT_DIR = String(process.env.ROOT_DIR);
 export const NODE_ENV = String(process.env.NODE_ENV);
 export const ALLOWED_ORIGIN = String(process.env.ALLOWED_ORIGIN);
 export const HTTP_PORT = Number(3001);

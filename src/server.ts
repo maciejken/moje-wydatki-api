@@ -6,17 +6,16 @@ import express, {
   NextFunction
 } from 'express';
 import cors from 'cors';
-import 'dotenv/config';
+import { ALLOWED_ORIGIN, API_PREFIX, HTTP_PORT } from './config';
 import getLogger from './lib/getLogger';
-import { expensesRouter, usersRouter } from './routes';
+import { authRouter, expensesRouter, usersRouter } from './routes';
 import errorHandler from './middleware/errorHandler';
 
 const app: Express = express();
-const allowedOrigin = process.env.ALLOWED_ORIGIN;
 const logger = getLogger('server');
-logger.debug(`Access Control Allow Origin: ${allowedOrigin}`);
+logger.debug(`Access Control Allow Origin: ${ALLOWED_ORIGIN}`);
 app.use(cors({
-  origin: allowedOrigin,
+  origin: ALLOWED_ORIGIN,
   credentials: true,
 }));
 app.use(express.urlencoded({ extended: false }));
@@ -28,11 +27,11 @@ const logRequestStart = (req: Request, res: Response, next: NextFunction) => {
 };
 app.use(logRequestStart);
 
-const apiPrefix = process.env.API_PREFIX;
-logger.debug(`API prefix is "${apiPrefix}"`);
+logger.debug(`API prefix is "${API_PREFIX}"`);
 
-app.use(`${apiPrefix}/expenses`, expensesRouter);
-app.use(`${apiPrefix}/users`, usersRouter);
+app.use(`${API_PREFIX}/auth`, authRouter);
+app.use(`${API_PREFIX}/expenses`, expensesRouter);
+app.use(`${API_PREFIX}/users`, usersRouter);
 
 const logRequestError = (req: Request, res: Response, next: NextFunction) => {
   logger.error(`${req.method} ${req.originalUrl} route not found`);
@@ -42,8 +41,7 @@ app.use(logRequestError);
 app.use(errorHandler);
 
 const httpServer = http.createServer(app);
-const port = process.env.HTTP_PORT;
 
-httpServer.listen(port, () => {
-  logger.info(`server is running on port ${port}`);
+httpServer.listen(HTTP_PORT, () => {
+  logger.info(`server is running on port ${HTTP_PORT}`);
 });
