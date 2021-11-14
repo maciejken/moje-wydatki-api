@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 
 export interface UserAttributes {
   id: number;
@@ -43,5 +43,25 @@ class User extends Model<UserAttributes, UserCreationAttributes>
       return User.encryptPassword(enteredPassword, this.salt) === this.password;
     }
   }
+
+export const UserSettings = {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false,
+  },
+  username: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: false,
+  },
+  password: {
+    type: DataTypes.STRING,
+  },
+  salt: {
+    type: DataTypes.STRING,
+  },
+};
 
 export default User;

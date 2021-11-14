@@ -1,4 +1,4 @@
-import { DataTypes, Dialect, Sequelize } from "sequelize";
+import { Dialect, Sequelize } from "sequelize";
 
 import getLogger from "../lib/getLogger";
 import {
@@ -11,7 +11,8 @@ import {
   DB_DIALECT,
 } from "../config";
 import { Tables } from "./tables.enum";
-import User, { UserInstance } from "./user.model";
+import User, { UserInstance, UserSettings } from "./user.model";
+import Expense, { ExpenseSettings } from "./expense.model";
 
 const sequelize = new Sequelize({
   database: DB_NAME,
@@ -26,25 +27,7 @@ const sequelize = new Sequelize({
 const logger = getLogger('model');
 
 User.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-      allowNull: false,
-    },
-    username: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-    },
-    password: {
-      type: DataTypes.STRING,
-    },
-    salt: {
-      type: DataTypes.STRING,
-    },
-  },
+  UserSettings,
   {
     sequelize,
     tableName: Tables.User    
@@ -61,11 +44,20 @@ const setSaltAndPassword = (user: UserInstance) => {
 User.beforeCreate(setSaltAndPassword);
 User.beforeUpdate(setSaltAndPassword);
 
+Expense.init(
+  ExpenseSettings,
+  {
+    sequelize,
+    tableName: Tables.Expense
+  },
+);
+
 sequelize.sync().then(() => {
   logger.info(`database synced`);
 });
 
 export {
+  Expense,
   User,
 }
 
