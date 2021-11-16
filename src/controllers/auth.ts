@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { getAuthToken } from "../services/auth";
+import { getAuthToken, verifyToken } from "../services/auth";
 
 export const getUserToken = async (
   req: Request,
@@ -10,7 +10,8 @@ export const getUserToken = async (
   const authBase64: string = String(authorization).replace("Basic ", "");
   getAuthToken(authBase64)
     .then((token) => {
-      res.status(200).json({ token });
+      const claims = verifyToken(token);
+      res.status(200).json({ token, claims });
     })
     .catch(next);
 };

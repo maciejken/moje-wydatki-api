@@ -5,7 +5,7 @@ export const NODE_ENV = String(process.env.NODE_ENV);
 export const ALLOWED_ORIGIN = String(process.env.ALLOWED_ORIGIN);
 export const HTTP_PORT = Number(3001);
 export const API_PREFIX = String(process.env.API_PREFIX);
-export const TOKEN_VALIDITY = Number(process.env.TOKEN_VALIDITY);
+export const JWT_EXPIRES_IN = String(process.env.JWT_EXPIRES_IN);
 
 export const DB_NAME = String(process.env.DB_NAME);
 export const DB_HOST = String(process.env.DB_HOST);

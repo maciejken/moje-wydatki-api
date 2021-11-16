@@ -10,7 +10,8 @@ export const checkUserToken = (
   try {
     const { authorization } = req.headers;
     const token = String(authorization).replace("Bearer ", "");
-    verifyToken(token);
+    const claims = verifyToken(token);
+    res.locals.userId = parseInt(claims.sub as string);
     next();
   } catch (err: unknown) {
     let message = 'Generic auth error';

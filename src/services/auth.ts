@@ -1,20 +1,20 @@
 import { readFileSync } from "fs";
 import jwt from "jsonwebtoken";
-import { ROOT_DIR, TOKEN_VALIDITY } from "../config";
+import { ROOT_DIR, JWT_EXPIRES_IN } from "../config";
 import { CustomError } from "../middleware/errorHandler";
 import { UserAttributes } from "model/user.model";
 import { parseAuth } from "../utils";
 import { getUserById, getUserByName } from "./users";
 
 const privateKey = readFileSync(`${ROOT_DIR}/keys/priv.key`);
+// const publicKey = readFileSync(`${ROOT_DIR}/keys/pub.key`);
 
 const getToken = ({ id, username }: UserAttributes) => {
-    const payload = { username };
     const options = {
-      expiresIn: TOKEN_VALIDITY * 1000,
+      expiresIn: JWT_EXPIRES_IN,
       subject: String(id),
     };
-    return jwt.sign(payload, privateKey, options);
+    return jwt.sign({}, privateKey, options);
 };
 
 export const getAuthToken = async (auth: string) => {
@@ -50,8 +50,8 @@ export const verifyToken = (token: string) => {
 
 export const refreshToken = async (oldToken: string) => {
   try {
-    const verifiedToken = verifyToken(oldToken);
-    const userId = parseInt(verifiedToken!.sub as string);
+    const claims = verifyToken(oldToken);
+    const userId = parseInt(claims.sub as string);
     const user = await getUserById(userId);
     if (user) {
       return getToken(user);
