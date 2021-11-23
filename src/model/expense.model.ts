@@ -6,7 +6,7 @@ export interface ExpenseAttributes {
   amount: number;
   date: string;
   userId: number;
-  private: boolean;
+  isPrivate: boolean;
   categoryId: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -33,7 +33,7 @@ class Expense
   public date!: string;
   public categoryId!: string;
   public userId!: number;
-  public private!: boolean;
+  public isPrivate!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -60,7 +60,7 @@ export const ExpenseSettings = {
   userId: {
     type: DataTypes.INTEGER,
   },
-  private: {
+  isPrivate: {
     type: DataTypes.BOOLEAN,
   },
 };

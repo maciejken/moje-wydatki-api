@@ -8,7 +8,9 @@ export const getExpenses = async (req: Request, res: Response) => {
 };
 
 export const addExpense = async (req: Request, res: Response, next: NextFunction) => {
-  createExpense(req.body)
+  const { amount, categoryId, date, isPrivate, title } = req.body;
+  const { userId } = res.locals;
+  createExpense({ amount, categoryId, date, isPrivate, title, userId } as ExpenseAttributes)
     .then((expense: ExpenseAttributes) => {
       res.status(201).json(expense);
     })
