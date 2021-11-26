@@ -14,3 +14,5 @@ export const DB_USER = String(process.env.DB_USER);
 export const DB_PASSWORD = String(process.env.DB_PASSWORD);
 export const DB_LOGGING = Boolean(process.env.DB_LOGGING);
 export const DB_DIALECT = String(process.env.DB_DIALECT);
+
+export const ALLOWED_USERS = String(process.env.ALLOWED_USERS);
