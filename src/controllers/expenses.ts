@@ -1,27 +1,73 @@
 import { NextFunction, Request, Response } from "express";
 import { ExpenseAttributes } from "model/expense.model";
-import { createExpense, deleteExpense, findExpenses } from "../services/expenses";
+import {
+  createExpense,
+  destroyExpense,
+  findExpenses,
+  getMonthlyExpenses,
+  updateExpense,
+} from "../services/expenses";
 
 export const getExpenses = async (req: Request, res: Response) => {
-  const expenses = await findExpenses();
+  const { year, month } = req.params;
+  const query = { year, month };
+  const expenses = await findExpenses(query);
   res.status(200).json(expenses);
 };
 
-export const addExpense = async (req: Request, res: Response, next: NextFunction) => {
+export const getChartData = async (req: Request, res: Response) => {
+  const chartData = await getMonthlyExpenses();
+  res.status(200).json(chartData);
+};
+
+export const postExpense = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { amount, categoryId, date, isPrivate, title } = req.body;
   const { userId } = res.locals;
-  createExpense({ amount, categoryId, date, isPrivate, title, userId } as ExpenseAttributes)
+  createExpense({
+    amount,
+    categoryId,
+    date,
+    isPrivate,
+    title,
+    userId,
+  } as ExpenseAttributes)
     .then((expense: ExpenseAttributes) => {
       res.status(201).json(expense);
     })
     .catch(next);
-}
+};
 
-
-export const removeExpense = async (req: Request, res: Response, next: NextFunction) => {
-  deleteExpense(req.params.expenseId)
+export const deleteExpense = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  destroyExpense(req.params.expenseId)
     .then((removed: number) => {
       res.status(201).json({ removed });
     })
     .catch(next);
-}
+};
+
+export const patchExpense = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { amount, categoryId, date, isPrivate, title } = req.body;
+  updateExpense(req.params.expenseId, {
+    amount,
+    categoryId,
+    date,
+    isPrivate,
+    title,
+  } as ExpenseAttributes)
+    .then((updatedExpense) => {
+      res.status(201).json(updatedExpense);
+    })
+    .catch(next);
+};

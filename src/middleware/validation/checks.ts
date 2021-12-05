@@ -19,9 +19,9 @@ export const Expense = [
   {
     in: PartOfRequest.Body,
     name: "title",
-    check: (value: string) => validator.isLength(value, { min: 4, max: 32 }),
+    check: (value: string) => validator.isLength(value, { min: 4, max: 64 }),
     message: "błędna nazwa",
-    hint: "wprowadź 4-32 znaków",
+    hint: "wprowadź 4-64 znaków",
   },
   {
     in: PartOfRequest.Body,
