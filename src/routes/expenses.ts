@@ -16,6 +16,6 @@ router.patch("/:expenseId", checkUserToken, patchExpense);
 router.delete("/:expenseId", checkUserToken, deleteExpense);
 
 router.get("/chart", checkUserToken, getChartData);
-router.get("/:year/:month", checkUserToken, getExpenses);
+router.get("/", checkUserToken, getExpenses);
 
 export const expensesRouter = router;

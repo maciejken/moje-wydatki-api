@@ -4,19 +4,22 @@ import {
   createExpense,
   destroyExpense,
   findExpenses,
-  getMonthlyExpenses,
+  getExpensesChartData,
   updateExpense,
 } from "../services/expenses";
+import { Interval } from "utils/date";
 
 export const getExpenses = async (req: Request, res: Response) => {
-  const { year, month } = req.params;
-  const query = { year, month };
-  const expenses = await findExpenses(query);
+  const date = req.query.date as string;
+  const interval = req.query.interval as Interval;
+  const expenses = await findExpenses({ date, interval });
   res.status(200).json(expenses);
 };
 
 export const getChartData = async (req: Request, res: Response) => {
-  const chartData = await getMonthlyExpenses();
+  const date = req.query.date as string;
+  const interval = req.query.interval as Interval;
+  const chartData = await getExpensesChartData({ date, interval });
   res.status(200).json(chartData);
 };
 

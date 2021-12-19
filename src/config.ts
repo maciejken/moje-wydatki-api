@@ -16,3 +16,4 @@ export const DB_LOGGING = Boolean(process.env.DB_LOGGING);
 export const DB_DIALECT = String(process.env.DB_DIALECT);
 
 export const ALLOWED_USERS = String(process.env.ALLOWED_USERS);
+export const LOCALE = String(process.env.LOCALE);
