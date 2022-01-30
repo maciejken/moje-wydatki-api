@@ -2,6 +2,8 @@ FROM node:16-alpine
 
 WORKDIR /app
 
+RUN apk update && apk add openssh
+
 # add app
 COPY . ./
 RUN npm install --quiet
