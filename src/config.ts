@@ -3,7 +3,7 @@ import 'dotenv/config';
 export const ROOT_DIR = String(process.env.ROOT_DIR);
 export const NODE_ENV = String(process.env.NODE_ENV);
 export const ALLOWED_ORIGIN = String(process.env.ALLOWED_ORIGIN);
-export const HTTP_PORT = Number(3001);
+export const HTTP_PORT = Number(process.env.HTTP_PORT);
 export const API_PREFIX = String(process.env.API_PREFIX);
 export const JWT_EXPIRES_IN = String(process.env.JWT_EXPIRES_IN);
 
@@ -17,3 +17,4 @@ export const DB_DIALECT = String(process.env.DB_DIALECT);
 
 export const ALLOWED_USERS = String(process.env.ALLOWED_USERS);
 export const LOCALE = String(process.env.LOCALE);
+export const CURRENCY = String(process.env.CURRENCY);

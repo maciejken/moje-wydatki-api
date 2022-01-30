@@ -7,7 +7,6 @@ import { parseAuth } from "../utils";
 import { getUserById, getUserByName } from "./users";
 
 const privateKey = readFileSync(`${ROOT_DIR}/keys/priv.key`);
-// const publicKey = readFileSync(`${ROOT_DIR}/keys/pub.key`);
 
 const getToken = ({ id, username }: UserAttributes) => {
     const options = {

@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
+    "postinstall": "bash ./scripts/postinstall.sh",
     "dev": "tsc && node dist/server.js",
     "build": "rm -rf dist/ && tsc",
     "start": "node dist/server.js",

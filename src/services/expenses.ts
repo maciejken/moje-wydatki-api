@@ -5,6 +5,8 @@ import {
 } from "model/expense.model";
 import { Expense } from "../model";
 import {
+  DateNumber,
+  DateString,
   formatDate,
   getDateRange,
   getDateString,
@@ -12,11 +14,45 @@ import {
   getParentInterval,
   Interval,
 } from "../utils/date";
+import { LOCALE, CURRENCY as currency } from "../config";
 
 interface ExpenseQuery {
   date: string;
   interval: Interval;
 }
+
+interface InfoData {
+  x: string;
+  y: number;
+  date: string;
+  interval: Interval;
+}
+
+const getLocalAmount = (amount: number) => amount.toLocaleString(LOCALE, {
+  style: 'currency',
+  currency,
+});
+
+const getInfoText = ({ x, y, date, interval }: InfoData) => {
+  const d = new Date(date);
+  const localAmount = getLocalAmount(y);
+  let localDate;
+  switch (interval) {
+    case Interval.Year:
+      return `${x} - ${localAmount}`;
+    case Interval.Month:
+      localDate = formatDate(d, {
+        month: DateString.Long,
+        year: DateNumber.Numeric
+      })
+      return `${localDate} - ${localAmount}`;
+    case Interval.Day:
+      localDate = formatDate(d);
+      return `${localDate} - ${localAmount}`;
+    default:
+      return null;
+  }
+};
 
 export const findExpenses = ({ date, interval }: ExpenseQuery) => {
   const [startDate, endDate] = getDateRange({ date, interval });
@@ -66,7 +102,8 @@ export const getExpensesChartData = async ({
     return itemsFromDb.map((item) => {
       const x = "" + new Date(item.date).getFullYear();
       const y = Math.round(100 * item.amount) / 100;
-      return { x, y, label: x };
+      const info = getInfoText({ x, y, date: item.date, interval });
+      return { x, y, label: x, info };
     });
   }
   const isMonth = interval === Interval.Month;
@@ -82,12 +119,17 @@ export const getExpensesChartData = async ({
     const mm = String(month + 1).padStart(2, "0");
     const dd = String(day).padStart(2, "0");
     const x = "" + (index + indexShift);
+    const dateString = `${year}-${mm}-${dd}`;
     const itemFromDb = itemsFromDb.find(
-      (item) => getDateString(item.date) === `${year}-${mm}-${dd}`
+      (item) => getDateString(item.date) === dateString
     );
     const y = itemFromDb ? Math.round(100 * itemFromDb.amount) / 100 : 0;
-    const label = isMonth ? formatDate(itemDate, { month: "short" }) : x;
-    return { x, y, label };
+    const monthShort = formatDate(itemDate, {
+      month: DateString.Short
+    });
+    const label = isMonth ? monthShort : x;
+    const info = getInfoText({ x, y, date: dateString, interval });
+    return { x, y, label, info };
   });
 };
 
