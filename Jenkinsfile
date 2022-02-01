@@ -1,16 +1,12 @@
 pipeline {
-  agent {
-    node { label 'built-in' }
-  }
+  agent any
   stages {
     stage('docker build') {
+      environment {
+        APP_IMAGE_TAG = sh(script: "npm run version", returnStdout: true)[-6..-1]
+      }
       steps {
-        script {
-          def VERSION_STDOUT = sh script: "npm run version", returnStdout: true
-          def IMAGE_TAG = VERSION_STDOUT[-6..-1]
-          env['APP_IMAGE_TAG'] = IMAGE_TAG
-          sh "docker build . -t moje_wydatki_api:${IMAGE_TAG}"
-        }
+        sh "docker build . -t moje_wydatki_api:${APP_IMAGE_TAG}"
       }
     }
     stage('docker run') {
