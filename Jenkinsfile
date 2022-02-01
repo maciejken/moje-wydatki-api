@@ -6,7 +6,7 @@ pipeline {
     stage('docker build') {
       steps {
         sh "npm run version > env['APP_VERSION']"
-        echo $APP_VERSION
+        // echo $APP_VERSION
         echo env.APP_VERSION
         sh "docker build -t moje_wydatki_api ."
       }
