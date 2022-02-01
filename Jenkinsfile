@@ -3,7 +3,8 @@ pipeline {
   stages {
     stage('docker build') {
       environment {
-        APP_IMAGE_TAG = sh(script: "npm run version", returnStdout: true)[-6..-1]
+        APP_VERSION = sh script: "npm run version", returnStdout: true
+        APP_IMAGE_TAG = APP_VERSION[-6..-1]
       }
       steps {
         sh "docker build . -t moje_wydatki_api:${APP_IMAGE_TAG}"
