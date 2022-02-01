@@ -7,7 +7,7 @@ pipeline {
       steps {
         script {
           def VERSION_STDOUT = sh script: "npm run version", returnStdout: true
-          def APP_VERSION = sh script: "echo ${VERSION_STDOUT:(-5)}", returnStdout: true
+          def APP_VERSION = VERSION_STDOUT[-5..-1]
           echo APP_VERSION
           // sh "docker build -t moje_wydatki_api ."
         }
