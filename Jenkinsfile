@@ -7,9 +7,8 @@ pipeline {
       steps {
         script {
           def VERSION_STDOUT = sh script: "npm run version", returnStdout: true
-          def IMAGE_TAG = VERSION_STDOUT[-6..-1] + "." + env.BUILD_NUMBER
-          echo IMAGE_TAG
-          sh "docker build . -t ${IMAGE_TAG}"
+          def IMAGE_TAG = VERSION_STDOUT[-6..-1]
+          sh "docker build . -t moje_wydatki_api:${IMAGE_TAG}"
         }
       }
     }
