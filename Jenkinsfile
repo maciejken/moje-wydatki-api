@@ -1,12 +1,12 @@
 pipeline {
   agent any
   environment {
-    APP_VERSION = "${sh(script: 'npm run -s version', returnStdout: true).trim()}"
+    APP_VERSION = "${sh(script: 'npm run -s version', returnStdout: true).trim()}_${BUILD_NUMBER}"
   }
   stages {
     stage('docker build') {
       steps {
-        sh "docker build . -t moje_wydatki_api:${APP_VERSION}_${BUILD_NUMBER}"
+        sh "docker build . -t moje_wydatki_api:${APP_VERSION}"
       }
     }
     stage('docker run') {
