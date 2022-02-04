@@ -19,9 +19,16 @@ pipeline {
         sh "docker build . -t moje_wydatki_api:${APP_VERSION}"
       }
     }
-    stage('start container') {
+    stage('deploy QA') {
+      when { branch 'develop' }
       steps {
-        sh 'docker-compose up -d'
+        sh 'docker-compose -f docker-compose.qa.yml up -d'
+      }
+    }
+    stage('deploy PROD') {
+      when { branch 'main' }
+      steps {
+        sh 'docker-compose -f docker-compose.prod.yml up -d'
       }
     }
   }
