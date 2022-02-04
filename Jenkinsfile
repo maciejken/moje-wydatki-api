@@ -6,6 +6,7 @@ pipeline {
   stages {
     stage('install') {
       steps {
+        deleteDir()
         sh "npm install"
       }
     }
@@ -22,6 +23,11 @@ pipeline {
     stage('start container') {
       steps {
         sh 'docker-compose up -d'
+      }
+    }
+    post {
+      cleanup {
+        deleteDir()
       }
     }
   }
