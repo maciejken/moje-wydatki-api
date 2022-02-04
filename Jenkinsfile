@@ -6,7 +6,6 @@ pipeline {
   stages {
     stage('install') {
       steps {
-        deleteDir()
         sh "npm install"
       }
     }
