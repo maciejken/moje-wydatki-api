@@ -25,10 +25,10 @@ pipeline {
         sh 'docker-compose up -d'
       }
     }
-    post {
-      cleanup {
-        deleteDir()
-      }
+  }
+  post {
+    cleanup {
+      deleteDir()
     }
   }
 }
