@@ -15,6 +15,7 @@ node_modules/
 .gitignore
 .env*
 dist/
+scripts/
 docker-compose.yml
 Dockerfile
 Jenkinsfile
