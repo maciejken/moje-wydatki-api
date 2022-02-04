@@ -4,11 +4,11 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "postinstall": "sh ./scripts/postinstall.sh",
     "dev": "tsc && node dist/server.js",
     "build": "rm -rf dist/ && tsc",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "posttest": "sh scripts/posttest.sh",
     "version": "echo $npm_package_version"
   },
   "keywords": [],
