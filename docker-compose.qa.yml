@@ -18,7 +18,7 @@ services:
       - db
     image: moje_wydatki_api:${APP_VERSION}
     ports:
-      - "${API_PORT}:80"
+      - "3002:80"
     restart: always
     environment:
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
@@ -28,7 +28,6 @@ services:
       CURRENCY: ${CURRENCY}
       DB_DIALECT: postgres
       DB_HOST: db
-      # DB_LOGGING: ${DB_LOGGING}
       DB_NAME: moje_wydatki_qa
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
