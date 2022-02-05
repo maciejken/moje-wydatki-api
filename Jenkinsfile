@@ -10,8 +10,15 @@ pipeline {
     string(name: "ROOT_DIR", defaultValue: "/app")
   }
   environment {
+    ALLOWED_USERS = "${params.ALLOWED_USERS}"
+    API_PREFIX = "${params.API_PREFIX}"
     APP_VERSION = "${sh(script: 'npm run -s version', returnStdout: true).trim()}_${BUILD_NUMBER}"
+    CURRENCY = "${params.CURRENCY}"
     DB_PATH = credentials('postgres-db-path')
+    DB_PORT = "${params.DB_PORT}"
+    JWT_EXPIRES_IN = "${params.JWT_EXPIRES_IN}"
+    LOCALE = "${params.LOCALE}"
+    ROOT_DIR = "${params.ROOT_DIR}"
   }
   stages {
     stage('install') {
