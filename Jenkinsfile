@@ -1,7 +1,6 @@
 pipeline {
   agent any
   parameters {
-    string(name: "DB_PORT", defaultValue: "5432")
     string(name: "ALLOWED_USERS")
     string(name: "API_PREFIX", defaultValue: "/api")
     string(name: "CURRENCY", defaultValue: "PLN")
@@ -14,7 +13,6 @@ pipeline {
     API_PREFIX = "${params.API_PREFIX}"
     APP_VERSION = "${sh(script: 'npm run -s version', returnStdout: true).trim()}_${BUILD_NUMBER}"
     CURRENCY = "${params.CURRENCY}"
-    DB_PATH = credentials('postgres-db-path')
     DB_PORT = "${params.DB_PORT}"
     JWT_EXPIRES_IN = "${params.JWT_EXPIRES_IN}"
     LOCALE = "${params.LOCALE}"
@@ -42,6 +40,8 @@ pipeline {
         DB_NAME = 'moje_wydatki_qa'
         DB_USER = credentials('postgres-db-user-qa')
         DB_PASSWORD = credentials('postgres-db-password-qa')
+        DB_PATH = credentials('postgres-db-path-qa')
+        DB_PORT = "5433"
       }
       steps {
         sh 'docker-compose -f docker-compose.qa.yml up -d'
@@ -53,6 +53,8 @@ pipeline {
         DB_NAME = 'moje_wydatki'
         DB_USER = credentials('postgres-db-user')
         DB_PASSWORD = credentials('postgres-db-password')
+        DB_PATH = credentials('postgres-db-path')
+        DB_PORT = "5432"
       }
       steps {
         sh 'docker-compose -f docker-compose.prod.yml up -d'
