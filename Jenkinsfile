@@ -13,7 +13,7 @@ pipeline {
     API_PREFIX = "${params.API_PREFIX}"
     APP_VERSION = "${sh(script: 'npm run -s version', returnStdout: true).trim()}_${BUILD_NUMBER}"
     CURRENCY = "${params.CURRENCY}"
-    DB_PORT = "${params.DB_PORT}"
+    DB_NAME = 'moje_wydatki'
     JWT_EXPIRES_IN = "${params.JWT_EXPIRES_IN}"
     LOCALE = "${params.LOCALE}"
     ROOT_DIR = "${params.ROOT_DIR}"
@@ -37,7 +37,6 @@ pipeline {
     stage('deploy QA') {
       when { branch 'develop' }
       environment {
-        DB_NAME = 'moje_wydatki_qa'
         DB_USER = credentials('postgres-db-user-qa')
         DB_PASSWORD = credentials('postgres-db-password-qa')
         DB_PATH = credentials('postgres-db-path-qa')
@@ -50,7 +49,6 @@ pipeline {
     stage('deploy PROD') {
       when { branch 'main' }
       environment {
-        DB_NAME = 'moje_wydatki'
         DB_USER = credentials('postgres-db-user')
         DB_PASSWORD = credentials('postgres-db-password')
         DB_PATH = credentials('postgres-db-path')
