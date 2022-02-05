@@ -39,6 +39,7 @@ pipeline {
     stage('deploy QA') {
       when { branch 'develop' }
       environment {
+        DB_NAME = 'moje_wydatki_qa'
         DB_USER = credentials('postgres-db-user-qa')
         DB_PASSWORD = credentials('postgres-db-password-qa')
       }
@@ -49,6 +50,7 @@ pipeline {
     stage('deploy PROD') {
       when { branch 'main' }
       environment {
+        DB_NAME = 'moje_wydatki'
         DB_USER = credentials('postgres-db-user')
         DB_PASSWORD = credentials('postgres-db-password')
       }
