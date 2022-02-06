@@ -25,7 +25,7 @@ pipeline {
   stages {
     stage('deploy QA') {
       when {
-        expression { PROD_DEPLOY == false }
+        expression { PROD_DEPLOY == 'false' }
       }
       environment {
         API_PORT = "3002"
@@ -40,7 +40,7 @@ pipeline {
     }
     stage('deploy PROD') {
       when {
-        expression { PROD_DEPLOY == true }
+        expression { PROD_DEPLOY == 'true' }
       }
       environment {
         API_PORT = "3001"
