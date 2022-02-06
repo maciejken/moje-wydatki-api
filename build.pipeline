@@ -2,22 +2,10 @@ pipeline {
   agent any
   parameters {
     string(name: "ALLOWED_USERS")
-    string(name: "API_PREFIX", defaultValue: "/api")
-    string(name: "CURRENCY", defaultValue: "PLN")
-    string(name: "LOCALE", defaultValue: "pl-PL")
-    string(name: "JWT_EXPIRES_IN", defaultValue: "15 minutes")
-    string(name: "ROOT_DIR", defaultValue: "/app")
   }
   environment {
     ALLOWED_USERS = "${params.ALLOWED_USERS}"
-    API_PREFIX = "${params.API_PREFIX}"
     APP_VERSION = "${sh(script: 'npm run -s log:version', returnStdout: true).trim()}_${BUILD_NUMBER}"
-    CURRENCY = "${params.CURRENCY}"
-    DB_NAME = 'moje_wydatki'
-    DB_PORT = "5432"
-    JWT_EXPIRES_IN = "${params.JWT_EXPIRES_IN}"
-    LOCALE = "${params.LOCALE}"
-    ROOT_DIR = "${params.ROOT_DIR}"
   }
   stages {
     stage('install') {
@@ -43,7 +31,7 @@ pipeline {
         DB_PATH = credentials('postgres-db-path-qa')
       }
       steps {
-        sh 'docker-compose -f docker-compose.qa.yml up -d'
+        sh 'docker-compose -f docker_compose/build-qa.yml up -d'
       }
     }
     stage('deploy PROD') {
@@ -54,7 +42,7 @@ pipeline {
         DB_PATH = credentials('postgres-db-path')
       }
       steps {
-        sh 'docker-compose -f docker-compose.prod.yml up -d'
+        sh 'docker-compose -f docker_compose/build-prod.yml up -d'
       }
     }
   }
