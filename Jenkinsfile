@@ -11,7 +11,7 @@ pipeline {
   environment {
     ALLOWED_USERS = "${params.ALLOWED_USERS}"
     API_PREFIX = "${params.API_PREFIX}"
-    APP_VERSION = "${sh(script: 'npm run -s version', returnStdout: true).trim()}_${BUILD_NUMBER}"
+    APP_VERSION = "${sh(script: 'npm run -s log:version', returnStdout: true).trim()}_${BUILD_NUMBER}"
     CURRENCY = "${params.CURRENCY}"
     DB_NAME = 'moje_wydatki'
     JWT_EXPIRES_IN = "${params.JWT_EXPIRES_IN}"
