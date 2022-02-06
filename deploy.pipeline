@@ -22,7 +22,7 @@ pipeline {
   }
   stages {
     stage('deploy QA') {
-      when { !PROD_DEPLOY }
+      when { expression !PROD_DEPLOY }
       environment {
         DB_USER = credentials('postgres-db-user-qa')
         DB_PASSWORD = credentials('postgres-db-password-qa')
@@ -34,7 +34,7 @@ pipeline {
       }
     }
     stage('deploy PROD') {
-      when { PROD_DEPLOY }
+      when { expression PROD_DEPLOY }
       environment {
         DB_USER = credentials('postgres-db-user')
         DB_PASSWORD = credentials('postgres-db-password')
