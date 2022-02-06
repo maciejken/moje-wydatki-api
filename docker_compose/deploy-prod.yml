@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  moje_wydatki_api:
+    image: moje_wydatki_api:${APP_VERSION}
+    ports:
+      - 3001:80
+    restart: always
+    environment:
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
+      ALLOWED_USERS: ${ALLOWED_USERS}
+      HTTP_PORT: 80
+      API_PREFIX: /api
+      CURRENCY: PLN
+      DB_DIALECT: postgres
+      DB_HOST: 172.17.0.1
+      DB_NAME: moje_wydatki
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: 5432
+      JWT_EXPIRES_IN: 15 minutes
+      LOCALE: pl-PL
+      NODE_ENV: qa
+      ROOT_DIR: /app
