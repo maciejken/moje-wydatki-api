@@ -3,6 +3,7 @@ pipeline {
   parameters {
     booleanParam(name: "PROD_DEPLOY", defaultValue: false, description: "Deploy to production")
     string(name: "APP_VERSION", defaultValue: "latest")
+    string(name: "DB_HOST", defaultValue: "172.17.0.1")
     string(name: "ALLOWED_USERS")
     string(name: "API_PREFIX", defaultValue: "/api")
     string(name: "CURRENCY", defaultValue: "PLN")
