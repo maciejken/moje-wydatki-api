@@ -14,6 +14,7 @@ pipeline {
     ALLOWED_USERS = "${params.ALLOWED_USERS}"
     API_PREFIX = "${params.API_PREFIX}"
     CURRENCY = "${params.CURRENCY}"
+    DB_HOST = "${params.DB_HOST}"
     DB_NAME = 'moje_wydatki'
     JWT_EXPIRES_IN = "${params.JWT_EXPIRES_IN}"
     LOCALE = "${params.LOCALE}"
@@ -26,13 +27,14 @@ pipeline {
         expression { !PROD_DEPLOY }
       }
       environment {
+        API_PORT = "3002"
         DB_USER = credentials('postgres-db-user-qa')
         DB_PASSWORD = credentials('postgres-db-password-qa')
         DB_PATH = credentials('postgres-db-path-qa')
         DB_PORT = "5433"
       }
       steps {
-        sh 'docker-compose -f docker-compose.qa.yml up -d'
+        sh 'docker-compose -f docker-compose.yml up -d'
       }
     }
     stage('deploy PROD') {
@@ -40,13 +42,14 @@ pipeline {
         expression { PROD_DEPLOY }
       }
       environment {
+        API_PORT = "3001"
         DB_USER = credentials('postgres-db-user')
         DB_PASSWORD = credentials('postgres-db-password')
         DB_PATH = credentials('postgres-db-path')
         DB_PORT = "5432"
       }
       steps {
-        sh 'docker-compose -f docker-compose.prod.yml up -d'
+        sh 'docker-compose -f docker-compose.yml up -d'
       }
     }
   }
