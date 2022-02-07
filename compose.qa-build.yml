@@ -6,7 +6,7 @@ services:
     volumes:
       - ${DB_PATH}:/data
     ports:
-      - "${DB_PORT}:5432"
+      - 5442:5432
     restart: always
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -18,7 +18,7 @@ services:
       - db
     image: moje_wydatki_api:${APP_VERSION}
     ports:
-      - "3002:80"
+      - 3011:80
     restart: always
     environment:
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}

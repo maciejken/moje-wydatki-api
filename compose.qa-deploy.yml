@@ -4,7 +4,7 @@ services:
   moje_wydatki_api:
     image: moje_wydatki_api:${APP_VERSION}
     ports:
-      - 3002:80
+      - 3011:80
     restart: always
     environment:
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
@@ -17,7 +17,7 @@ services:
       DB_NAME: moje_wydatki
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_PORT: 5433
+      DB_PORT: 5442
       JWT_EXPIRES_IN: 15 minutes
       LOCALE: pl-PL
       NODE_ENV: qa
