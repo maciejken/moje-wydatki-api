@@ -1,23 +1,21 @@
-import http from 'http';
-import express, {
-  Express,
-  Request,
-  Response,
-  NextFunction
-} from 'express';
-import cors from 'cors';
-import { ALLOWED_ORIGIN, API_PREFIX, HTTP_PORT } from './config';
-import getLogger from './lib/getLogger';
-import { authRouter, expensesRouter, usersRouter } from './routes';
-import errorHandler from './middleware/errorHandler';
+import http from "http";
+import express, { Express, Request, Response, NextFunction } from "express";
+import cors from "cors";
+import { ALLOWED_ORIGIN, ALLOWED_USERS, API_PREFIX, HTTP_PORT } from "./config";
+import getLogger from "./lib/getLogger";
+import { authRouter, expensesRouter, usersRouter } from "./routes";
+import errorHandler from "./middleware/errorHandler";
 
 const app: Express = express();
-const logger = getLogger('server');
+const logger = getLogger("server");
+logger.debug(`Allowed users: ${ALLOWED_USERS}`);
 logger.debug(`Access Control Allow Origin: ${ALLOWED_ORIGIN}`);
-app.use(cors({
-  origin: ALLOWED_ORIGIN,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: ALLOWED_ORIGIN,
+    credentials: true,
+  })
+);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 

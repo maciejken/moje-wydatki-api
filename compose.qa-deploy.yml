@@ -19,6 +19,6 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_PORT: 5442
       JWT_EXPIRES_IN: 15 minutes
+      PRIVATE_KEY: ${PRIVATE_KEY}
       LOCALE: pl-PL
       NODE_ENV: qa
-      ROOT_DIR: /app

@@ -1,5 +1,6 @@
 import validator from "validator";
 import { PartOfRequest } from "./types";
+import { ALLOWED_USERS } from "../../config";
 
 const ContentTypeHeaderCheck = {
   in: PartOfRequest.Headers,
@@ -44,5 +45,23 @@ export const Expense = [
     sanitize: (value: string) => (!value && validator.toFloat(value)) || 0,
     message: "błędna kwota",
     hint: "wprowadź wartość z przedziału od 0 do 1 miliona",
+  },
+];
+
+const AllowedUsers = ALLOWED_USERS.split(",");
+
+export const User = [
+  ContentTypeHeaderCheck,
+  {
+    in: PartOfRequest.Body,
+    name: "username",
+    check: (value: string) => AllowedUsers.indexOf(value) >= 0,
+    message: "niedozwolona nazwa użytkownika",
+  },
+  {
+    in: PartOfRequest.Body,
+    name: "password",
+    check: (value: string) => validator.isLength(value, { min: 8, max: 24 }),
+    message: "hasło musi składać się z 8-24 znaków",
   },
 ];

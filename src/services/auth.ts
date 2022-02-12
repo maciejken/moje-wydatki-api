@@ -1,19 +1,16 @@
-import { readFileSync } from "fs";
 import jwt from "jsonwebtoken";
-import { ROOT_DIR, JWT_EXPIRES_IN } from "../config";
+import { JWT_EXPIRES_IN, PRIVATE_KEY } from "../config";
 import { CustomError } from "../middleware/errorHandler";
 import { UserAttributes } from "model/user.model";
 import { parseAuth } from "../utils";
 import { getUserById, getUserByName } from "./users";
 
-const privateKey = readFileSync(`${ROOT_DIR}/keys/priv.key`);
-
-const getToken = ({ id, username }: UserAttributes) => {
-    const options = {
-      expiresIn: JWT_EXPIRES_IN,
-      subject: String(id),
-    };
-    return jwt.sign({}, privateKey, options);
+const getToken = ({ id }: UserAttributes) => {
+  const options = {
+    expiresIn: JWT_EXPIRES_IN,
+    subject: String(id),
+  };
+  return jwt.sign({}, PRIVATE_KEY, options);
 };
 
 export const getAuthToken = async (auth: string) => {
@@ -22,30 +19,30 @@ export const getAuthToken = async (auth: string) => {
   if (user && user.isCorrectPassword(password)) {
     return getToken(user);
   } else {
-    throw new CustomError('incorrect username or password', 403);
+    throw new CustomError("403: nieprawidłowy użytkownik lub hasło", 403);
   }
-}
+};
 
 const getAuthError = (err: unknown) => {
   let message: string;
   let statusCode: number;
   if (err instanceof Error) {
-    message = err.message;
+    message = `403: ${err.message}`;
     statusCode = 403;
   } else {
-    message = "How could it happen?!? (I'm a teapot)";
+    message = "418: Co takiego? (jestem czajnikiem)";
     statusCode = 418;
   }
   return new CustomError(message, statusCode);
-}
+};
 
 export const verifyToken = (token: string) => {
   try {
-    return jwt.verify(token, privateKey);
+    return jwt.verify(token, PRIVATE_KEY);
   } catch (err: unknown) {
     throw getAuthError(err);
   }
-}
+};
 
 export const refreshToken = async (oldToken: string) => {
   try {
@@ -55,7 +52,7 @@ export const refreshToken = async (oldToken: string) => {
     if (user) {
       return getToken(user);
     }
-    throw getAuthError(new Error(`User ${userId} not found!`)); 
+    throw getAuthError(new Error(`Nie znaleziono użytkownika ${userId}!`));
   } catch (err: unknown) {
     throw getAuthError(err);
   }
