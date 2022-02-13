@@ -2,8 +2,9 @@ import winston, { Logger } from "winston";
 import { NODE_ENV } from "../config";
 
 const getLogger = (service: string): Logger => {
+  const isInfo = ["development", "qa"].indexOf(NODE_ENV) < 0;
   const logger = winston.createLogger({
-    level: NODE_ENV !== "development" ? "info" : "debug",
+    level: isInfo ? "info" : "debug",
     format: winston.format.combine(
       winston.format.timestamp(),
       winston.format.splat(),

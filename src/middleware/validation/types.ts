@@ -10,7 +10,7 @@ export enum PartOfRequest {
 export interface ValidationCheck {
   in: PartOfRequest;
   name: string;
-  check: (value: string) => boolean;
+  check: (value: string) => boolean | Promise<boolean>;
   sanitize?: (value: string) => sanitized;
   message?: string;
   hint?: string;

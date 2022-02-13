@@ -1,6 +1,7 @@
 import validator from "validator";
 import { PartOfRequest } from "./types";
 import { ALLOWED_USERS } from "../../config";
+import { getUserByName } from "../../services/users";
 
 const ContentTypeHeaderCheck = {
   in: PartOfRequest.Headers,
@@ -48,14 +49,20 @@ export const Expense = [
   },
 ];
 
-const AllowedUsers = ALLOWED_USERS.split(",");
+const AllowedUsers = ALLOWED_USERS
+  .split(",")
+  .filter(Boolean)
+  .map(u => u?.trim());
 
 export const User = [
   ContentTypeHeaderCheck,
   {
     in: PartOfRequest.Body,
     name: "username",
-    check: (value: string) => AllowedUsers.indexOf(value) >= 0,
+    check: async (value: string) => {
+      const isAllowed = AllowedUsers.indexOf(value) >= 0;
+      return isAllowed && !(await getUserByName(value));
+    },
     message: "niedozwolona nazwa użytkownika",
   },
   {
