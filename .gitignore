@@ -1,7 +1,7 @@
 .env
 
+coverage/
+data/
 dist/
-keys/
 logs/
 node_modules/
-coverage/

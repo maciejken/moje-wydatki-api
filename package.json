@@ -10,7 +10,9 @@
     "start": "node dist/server.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "log:version": "echo $npm_package_version"
+    "log:version": "echo $npm_package_version",
+    "prebulkcreate": "npm run build",
+    "bulkcreate": "node dist/scripts/bulk-create.js"
   },
   "keywords": [],
   "author": "Maciej Kędra",

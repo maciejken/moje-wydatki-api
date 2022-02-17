@@ -6,6 +6,7 @@ export const HTTP_PORT = Number(process.env.HTTP_PORT);
 export const API_PREFIX = String(process.env.API_PREFIX);
 export const JWT_EXPIRES_IN = String(process.env.JWT_EXPIRES_IN);
 export const PRIVATE_KEY = String(process.env.PRIVATE_KEY);
+export const PWD = String(process.env.PWD);
 
 export const DB_NAME = String(process.env.DB_NAME);
 export const DB_HOST = String(process.env.DB_HOST);

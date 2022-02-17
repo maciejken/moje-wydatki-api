@@ -136,6 +136,9 @@ export const getExpensesChartData = async ({
 export const createExpense = (expenseData: ExpenseCreationAttributes) =>
   Expense.create(expenseData);
 
+export const bulkCreateExpenses = (expenses: ExpenseAttributes[]) =>
+  Expense.bulkCreate(expenses);
+
 export const destroyExpense = (expenseId: string) =>
   Expense.destroy({ where: { id: parseInt(expenseId) } });
 
