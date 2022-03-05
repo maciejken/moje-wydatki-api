@@ -18,7 +18,7 @@ const jsonData = JSON.parse(jsonString);
 
 bulkCreateExpenses(jsonData)
   .then((res) => {
-    logger.info(`${res.length} items created in DB ${DB_NAME}`);
+    logger.info(`${res.length} items created.`);
   })
   .catch((err) => {
     logger.error(err);

@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import { JWT_EXPIRES_IN, PRIVATE_KEY } from "../config";
-import { CustomError } from "../middleware/errorHandler";
-import { UserAttributes } from "model/user.model";
+import { UserAttributes } from "../model/user.model";
 import { parseAuth } from "../utils";
-import { getUserById, getUserByName } from "./users";
+import { getUserById, getUserByName } from "../services/users";
+import { ErrorCode } from "../middleware/errors";
 
 const getToken = ({ id }: UserAttributes) => {
   const options = {
@@ -15,32 +15,22 @@ const getToken = ({ id }: UserAttributes) => {
 
 export const getAuthToken = async (auth: string) => {
   const { username, password } = parseAuth(auth);
+  if (!auth || !username || !password) {
+    throw new Error(ErrorCode.AuthBasic);
+  }
   const user = await getUserByName(username);
   if (user && user.isCorrectPassword(password)) {
     return getToken(user);
   } else {
-    throw new CustomError("403: nieprawidłowy użytkownik lub hasło", 403);
+    throw new Error(ErrorCode.AuthForbidden);
   }
-};
-
-const getAuthError = (err: unknown) => {
-  let message: string;
-  let statusCode: number;
-  if (err instanceof Error) {
-    message = `403: ${err.message}`;
-    statusCode = 403;
-  } else {
-    message = "418: Co takiego? (jestem czajnikiem)";
-    statusCode = 418;
-  }
-  return new CustomError(message, statusCode);
 };
 
 export const verifyToken = (token: string) => {
   try {
     return jwt.verify(token, PRIVATE_KEY);
   } catch (err: unknown) {
-    throw getAuthError(err);
+    throw new Error(ErrorCode.AuthForbidden);
   }
 };
 
@@ -52,8 +42,8 @@ export const refreshToken = async (oldToken: string) => {
     if (user) {
       return getToken(user);
     }
-    throw getAuthError(new Error(`Nie znaleziono użytkownika ${userId}!`));
+    throw new Error(ErrorCode.AuthForbidden);
   } catch (err: unknown) {
-    throw getAuthError(err);
+    throw err;
   }
 };

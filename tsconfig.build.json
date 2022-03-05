@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es6",
     "module": "commonjs",
+    "target": "es6",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "removeComments": true,
+    "isolatedModules": true,
     "baseUrl": "src",
     "resolveJsonModule": true,
     "sourceMap": true,
-    "rootDir": "src",
     "outDir": "dist",
     "strict": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "sequelize/types"]

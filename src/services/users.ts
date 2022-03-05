@@ -1,4 +1,4 @@
-import { UserCreationAttributes } from "model/user.model";
+import { UserCreationAttributes } from "../model/user.model";
 import { User } from "../model";
 
 export const findUsers = () => User.findAll();

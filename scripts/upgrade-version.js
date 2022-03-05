@@ -1,3 +1,5 @@
+// TODO: convert to typescript and move to src/scripts
+
 const { exec } = require('child_process');
 
 const packageJson = require('../package.json');

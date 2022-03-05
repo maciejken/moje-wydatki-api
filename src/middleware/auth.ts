@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../services/auth";
-import { CustomError } from "./errorHandler";
+import { ErrorCode } from "./errors";
 
 export const checkUserToken = (
   req: Request,
@@ -14,10 +14,6 @@ export const checkUserToken = (
     res.locals.userId = parseInt(claims.sub as string);
     next();
   } catch (err: unknown) {
-    let message = 'Generic auth error';
-    if (err instanceof Error) {
-      message = err.message;
-    }
-    next(new CustomError(message, 403));
+    next(new Error(ErrorCode.AuthBearer));
   }
 };

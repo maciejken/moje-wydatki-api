@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ExpenseAttributes } from "model/expense.model";
+import { ExpenseAttributes } from "../model/expense.model";
 import {
   createExpense,
   destroyExpense,
@@ -7,7 +7,7 @@ import {
   getExpensesChartData,
   updateExpense,
 } from "../services/expenses";
-import { Interval } from "utils/date";
+import { Interval } from "../utils/date";
 
 export const getExpenses = async (req: Request, res: Response) => {
   const date = req.query.date as string;

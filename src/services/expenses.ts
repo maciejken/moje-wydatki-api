@@ -2,7 +2,7 @@ import { col, fn, literal, Op, WhereValue } from "sequelize";
 import {
   ExpenseAttributes,
   ExpenseCreationAttributes,
-} from "model/expense.model";
+} from "../model/expense.model";
 import { Expense } from "../model";
 import {
   DateNumber,

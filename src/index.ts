@@ -4,7 +4,7 @@ import cors from "cors";
 import { ALLOWED_ORIGIN, ALLOWED_USERS, API_PREFIX, HTTP_PORT } from "./config";
 import getLogger from "./lib/getLogger";
 import { authRouter, expensesRouter, usersRouter } from "./routes";
-import errorHandler from "./middleware/errorHandler";
+import errorHandler from "./middleware/errors";
 
 const app: Express = express();
 const logger = getLogger("server");

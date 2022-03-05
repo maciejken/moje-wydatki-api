@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UserAttributes } from "model/user.model";
+import { UserAttributes } from "../model/user.model";
 import { createUser, findUsers } from "../services/users";
 
 export const getUsers = async (req: Request, res: Response) => {

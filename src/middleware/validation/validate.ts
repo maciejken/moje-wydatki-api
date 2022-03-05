@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { CustomError } from "../errorHandler";
+import { ErrorCode } from "../errors";
 import { ValidationCheck, ValidationResult } from "./types";
 
 const getValidationResults = async (req: Request, checks: Array<ValidationCheck | Promise<ValidationCheck>>) =>
@@ -28,7 +28,7 @@ export const validate =
     const errors = await getValidationErrors(results);
 
     if (errors) {
-      next(new CustomError(errors, 422));
+      next(new Error(ErrorCode.DataInput));
     } else {
       next();
     }
