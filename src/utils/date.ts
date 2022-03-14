@@ -12,8 +12,6 @@ interface TimePeriod {
   interval: Interval;
 }
 
-const intervals = [Interval.Year, Interval.Month, Interval.Day];
-
 export enum DateString {
   Long = "long",
   Short = "short",
@@ -39,11 +37,6 @@ interface DateFormat {
   year?: DateNumber;
 }
 
-export const getParentInterval = (interval: Interval) => {
-  const index = intervals.indexOf(interval);
-  return intervals[index - 1];
-};
-
 export const formatDate = (
   date: Date,
   options: DateFormat = { dateStyle: DateStyle.Full }
@@ -61,13 +54,81 @@ export const getIntervalCount = ({ date, interval }: TimePeriod): number => {
   }
 };
 
-export const getDateRange = ({ date, interval }: TimePeriod): Date[] => {
-  const startDate = moment(date).startOf(interval).toDate();
-  const endDate = moment(startDate).endOf(interval).toDate();
+const intervals: Interval[] = [Interval.Year, Interval.Month, Interval.Day];
 
-  return [startDate, endDate];
+export const getDatePrecision = (date: string) =>
+  date?.split("-").filter(Boolean).length || 0;
+
+export const getUnitInterval = (date: string) => {
+  const precision = getDatePrecision(date);
+  return intervals[precision];
 };
 
+export const getTimespan = (date: string) => {
+  const precision = getDatePrecision(date);
+  return intervals[precision - 1];
+};
+
+const padDate = (num: number) => String(num).padStart(2, "0");
+
+const NumberToDateMap = {
+  [Interval.Year]: (startDate: Date, num: number) =>
+    new Date(`${startDate.getFullYear() + num}T00:00Z`),
+  [Interval.Month]: (startDate: Date, num: number) =>
+    new Date(`${startDate.getFullYear()}-${padDate(startDate.getMonth() + 1 + num)}T00:00Z`),
+  [Interval.Day]: (startDate: Date, num: number) =>
+    new Date(
+      `${startDate.getFullYear()}-${padDate(startDate.getMonth())}-${
+        padDate(startDate.getDate() + num)
+      }T00:00Z`
+    ),
+};
+
+const getNumberToDateMap =
+  (startDate: Date, unitInterval: Interval) => (num: number) => {
+    const numberToDateMapper = NumberToDateMap[unitInterval];
+    return numberToDateMapper(startDate, num);
+  };
+
+export const getIntervalStartDates = (date: string, unitInterval: Interval) => {
+  const startDate = date ? new Date(date) : startOfHistory;
+  let count;
+  if (unitInterval === Interval.Year) {
+    count = 6;
+  } else if (unitInterval === Interval.Month) {
+    count = 12;
+  } else if (unitInterval === Interval.Day) {
+    count = moment([
+      startDate.getFullYear(),
+      startDate.getMonth(),
+    ]).daysInMonth();
+  } else {
+    count = 0;
+  }
+  const numbers = [];
+  if (count > 0) {
+    for (let i = 0; i < count; i++) {
+      numbers.push(i);
+    }
+    return numbers.map(getNumberToDateMap(startDate, unitInterval));
+  } else {
+    return [];
+  }
+};
+
+export const startOfHistory = new Date("2021-01-01T00:00Z");
+export const endOfTime = new Date("9999-12-31T23:59:59Z");
+
+export const getOffsetDate = (date: Date, timespan: Interval): Date =>
+  timespan ? moment(date).endOf(timespan).toDate() : endOfTime;
+
+export const getMonthShort = (date: Date) =>
+  formatDate(date, {
+    month: DateString.Short,
+  });
+
+// deprecated
 export const getDateString = (date: string) => {
-  return new Date(date).toISOString().slice(0, 10);
+  const [head] = date.split("T");
+  return new Date(`${head}T00:00Z`).toISOString().slice(0, 10);
 };

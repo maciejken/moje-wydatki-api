@@ -1,4 +1,4 @@
-import { col, fn, literal, Op, WhereValue } from "sequelize";
+import { col, fn, literal, Op } from "sequelize";
 import {
   ExpenseAttributes,
   ExpenseCreationAttributes,
@@ -8,54 +8,46 @@ import {
   DateNumber,
   DateString,
   formatDate,
-  getDateRange,
-  getDateString,
-  getIntervalCount,
-  getParentInterval,
+  getOffsetDate,
   Interval,
+  startOfHistory,
+  getIntervalStartDates,
+  getTimespan,
+  getUnitInterval,
+  getMonthShort,
 } from "../utils/date";
 import { LOCALE, CURRENCY as currency } from "../config";
+import { roundNum } from "../utils/nums";
 
-interface ExpenseQuery {
-  date: string;
-  interval: Interval;
-}
+const getLocalAmount = (amount: number) =>
+  amount.toLocaleString(LOCALE, {
+    style: "currency",
+    currency,
+  });
 
-interface InfoData {
-  x: string;
-  y: number;
-  date: string;
-  interval: Interval;
-}
-
-const getLocalAmount = (amount: number) => amount.toLocaleString(LOCALE, {
-  style: 'currency',
-  currency,
-});
-
-const getInfoText = ({ x, y, date, interval }: InfoData) => {
-  const d = new Date(date);
-  const localAmount = getLocalAmount(y);
-  let localDate;
-  switch (interval) {
-    case Interval.Year:
-      return `${x} - ${localAmount}`;
-    case Interval.Month:
-      localDate = formatDate(d, {
-        month: DateString.Long,
-        year: DateNumber.Numeric
-      })
-      return `${localDate} - ${localAmount}`;
-    case Interval.Day:
-      localDate = formatDate(d);
-      return `${localDate} - ${localAmount}`;
-    default:
-      return null;
-  }
+const IntervalIdMap = {
+  [Interval.Year]: (date: Date) => date.getFullYear(),
+  [Interval.Month]: (date: Date, isLabel: boolean = false) =>
+    isLabel ? getMonthShort(date) : date.getMonth(),
+  [Interval.Day]: (date: Date) => date.getDate(),
 };
 
-export const findExpenses = ({ date, interval }: ExpenseQuery) => {
-  const [startDate, endDate] = getDateRange({ date, interval });
+const IntervalInfoMap = {
+  [Interval.Year]: (d: Date, amount: number) =>
+    `${d.getFullYear()} - ${getLocalAmount(amount)}`,
+  [Interval.Month]: (d: Date, amount: number) =>
+    `${formatDate(d, {
+      month: DateString.Long,
+      year: DateNumber.Numeric,
+    })} - ${getLocalAmount(amount)}`,
+  [Interval.Day]: (d: Date, amount: number) =>
+    `${formatDate(d)} - ${getLocalAmount(amount)}`,
+};
+
+export const findExpenses = (date: string) => {
+  const timespan = getTimespan(date);
+  const startDate = timespan ? new Date(date) : startOfHistory;
+  const endDate = getOffsetDate(startDate, timespan);
 
   return Expense.findAll({
     where: {
@@ -71,66 +63,65 @@ export const findExpenses = ({ date, interval }: ExpenseQuery) => {
   });
 };
 
-export const getExpensesChartData = async ({
-  date,
-  interval,
-}: ExpenseQuery) => {
-  const where: WhereValue = { isPrivate: false };
-  let itemCount = getIntervalCount({ date, interval });
-  const parentInterval = getParentInterval(interval);
-  if (parentInterval) {
-    const [startDate, endDate] = getDateRange({
-      date,
-      interval: parentInterval,
-    });
-    where.date = {
-      [Op.gte]: startDate,
-      [Op.lte]: endDate,
-    };
-  }
-  const itemsFromDb = await Expense.findAll({
-    where,
+interface ChartParams {
+  startDate: Date;
+  endDate: Date;
+  unitInterval: Interval;
+}
+
+const getChartDataFromDb = async ({
+  startDate,
+  endDate,
+  unitInterval,
+}: ChartParams) =>
+  Expense.findAll({
+    where: {
+      date: {
+        [Op.gte]: startDate,
+        [Op.lte]: endDate,
+      },
+      isPrivate: false,
+    },
     attributes: [
-      [fn("date_trunc", interval, col("date")), "date"],
+      [fn("date_trunc", unitInterval, col("date")), "date"],
       [fn("sum", col("amount")), "amount"],
     ],
-    group: [fn("date_trunc", interval, col("date"))],
+    group: [fn("date_trunc", unitInterval, col("date"))],
     raw: true,
     order: literal("date ASC"),
   });
-  if (!parentInterval) {
-    return itemsFromDb.map((item) => {
-      const x = "" + new Date(item.date).getFullYear();
-      const y = Math.round(100 * item.amount) / 100;
-      const info = getInfoText({ x, y, date: item.date, interval });
-      return { x, y, label: x, info };
-    });
-  }
-  const isMonth = interval === Interval.Month;
-  return Array.from(new Array(itemCount)).map((el, index) => {
-    const chartDate = new Date(date);
-    const year = chartDate.getFullYear();
-    const month = isMonth ? index : chartDate.getMonth();
-    const day = isMonth ? 1 : index + 1;
-    const itemDate = isMonth
-      ? new Date(year, month, day)
-      : new Date(year, month, index + 1);
-    const indexShift = isMonth ? 0 : 1;
-    const mm = String(month + 1).padStart(2, "0");
-    const dd = String(day).padStart(2, "0");
-    const x = "" + (index + indexShift);
-    const dateString = `${year}-${mm}-${dd}`;
-    const itemFromDb = itemsFromDb.find(
-      (item) => getDateString(item.date) === dateString
+
+const getIntervalToChartDataMap =
+  (expenses: Expense[], unitInterval: Interval) => (date: Date) => {
+    const timestamp = date.getTime();
+    const expenseFound = expenses.find(
+      (item) => new Date(item.date).getTime() === timestamp
     );
-    const y = itemFromDb ? Math.round(100 * itemFromDb.amount) / 100 : 0;
-    const monthShort = formatDate(itemDate, {
-      month: DateString.Short
-    });
-    const label = isMonth ? monthShort : x;
-    const info = getInfoText({ x, y, date: dateString, interval });
-    return { x, y, label, info };
+    const idMapper = IntervalIdMap[unitInterval];
+    const id = String(idMapper(date));
+    const amount = expenseFound ? roundNum(expenseFound.amount) : 0;
+    const label = idMapper(date, true);
+    const infoMapper = IntervalInfoMap[unitInterval];
+    const info = infoMapper(date, amount);
+
+    return { id, amount, label, info };
+  };
+
+// TODO: breaking change - update frontend accordingly
+// e.g. expenses/chart?date=2022-03 (date can be empty)
+// also check/sanitize date if empty (can be empty string)
+export const getExpensesChartData = async (date: string) => {
+  const timespan = getTimespan(date);
+  const unitInterval = getUnitInterval(date);
+  const startDate = timespan ? new Date(date) : startOfHistory;
+  const endDate = getOffsetDate(startDate, timespan);
+  const dataFromDb = await getChartDataFromDb({
+    startDate,
+    endDate,
+    unitInterval,
   });
+  const dates = getIntervalStartDates(date, unitInterval);
+  return dates.map(getIntervalToChartDataMap(dataFromDb, unitInterval));
 };
 
 export const createExpense = (expenseData: ExpenseCreationAttributes) =>

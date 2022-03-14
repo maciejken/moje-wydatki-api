@@ -7,19 +7,16 @@ import {
   getExpensesChartData,
   updateExpense,
 } from "../services/expenses";
-import { Interval } from "../utils/date";
 
 export const getExpenses = async (req: Request, res: Response) => {
   const date = req.query.date as string;
-  const interval = req.query.interval as Interval;
-  const expenses = await findExpenses({ date, interval });
+  const expenses = await findExpenses(date);
   res.status(200).json(expenses);
 };
 
 export const getChartData = async (req: Request, res: Response) => {
   const date = req.query.date as string;
-  const interval = req.query.interval as Interval;
-  const chartData = await getExpensesChartData({ date, interval });
+  const chartData = await getExpensesChartData(date);
   res.status(200).json(chartData);
 };
 
