@@ -5,8 +5,6 @@ import {
 } from "../model/expense.model";
 import { Expense } from "../model";
 import {
-  DateNumber,
-  DateString,
   formatDate,
   getOffsetDate,
   Interval,
@@ -15,6 +13,7 @@ import {
   getTimespan,
   getUnitInterval,
   getMonthShort,
+  getYearAndMonthLong,
 } from "../utils/date";
 import { LOCALE, CURRENCY as currency } from "../config";
 import { roundNum } from "../utils/nums";
@@ -36,10 +35,7 @@ const IntervalInfoMap = {
   [Interval.Year]: (d: Date, amount: number) =>
     `${d.getFullYear()} - ${getLocalAmount(amount)}`,
   [Interval.Month]: (d: Date, amount: number) =>
-    `${formatDate(d, {
-      month: DateString.Long,
-      year: DateNumber.Numeric,
-    })} - ${getLocalAmount(amount)}`,
+    `${getYearAndMonthLong(d)} - ${getLocalAmount(amount)}`,
   [Interval.Day]: (d: Date, amount: number) =>
     `${formatDate(d)} - ${getLocalAmount(amount)}`,
 };
@@ -92,17 +88,15 @@ const getChartDataFromDb = async ({
   });
 
 const getIntervalToChartDataMap =
-  (expenses: Expense[], unitInterval: Interval) => (date: Date) => {
-    const timestamp = date.getTime();
-    const expenseFound = expenses.find(
-      (item) => new Date(item.date).getTime() === timestamp
-    );
+  (amountByDate: { [key: number]: number }, unitInterval: Interval) =>
+  (date: Date) => {
     const idMapper = IntervalIdMap[unitInterval];
     const id = String(idMapper(date));
-    const amount = expenseFound ? roundNum(expenseFound.amount) : 0;
+    const amount = amountByDate[date.getTime()] || 0;
+    const roundedAmount = roundNum(amount);
     const label = idMapper(date, true);
     const infoMapper = IntervalInfoMap[unitInterval];
-    const info = infoMapper(date, amount);
+    const info = infoMapper(date, roundedAmount);
 
     return { id, amount, label, info };
   };
@@ -120,8 +114,13 @@ export const getExpensesChartData = async (date: string) => {
     endDate,
     unitInterval,
   });
+  const amountByDate: { [key: number]: number } = {};
+  for (const item of dataFromDb) {
+    const timestamp = new Date(item.date).getTime();
+    amountByDate[timestamp] = item.amount;
+  }
   const dates = getIntervalStartDates(date, unitInterval);
-  return dates.map(getIntervalToChartDataMap(dataFromDb, unitInterval));
+  return dates?.map(getIntervalToChartDataMap(amountByDate, unitInterval));
 };
 
 export const createExpense = (expenseData: ExpenseCreationAttributes) =>
