@@ -15,8 +15,20 @@ const jsonString = fs.readFileSync(`${PWD}/data/${filename}.json`, {
   flag: "r",
 });
 const jsonData = JSON.parse(jsonString);
+const dataToInsert = jsonData.map((d: any) => ({
+  // do not insert id as it will cause validation error at some point
+  // in database fed with data from backup
+  title: d.title,
+  amount: d.amount,
+  date: d.date,
+  categoryId: d.categoryId,
+  userId: d.userId,
+  isPrivate: d.isPrivate,
+  createdAt: d.createdAt,
+  updatedAt: d.updatedAt,
+}));
 
-bulkCreateExpenses(jsonData)
+bulkCreateExpenses(dataToInsert)
   .then((res) => {
     logger.info(`${res.length} items created.`);
   })

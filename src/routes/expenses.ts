@@ -1,6 +1,12 @@
 import { Router } from "express";
 import { checkUserToken } from "../middleware/auth";
-import { validate, Expense } from "../middleware/validation";
+import {
+  validate,
+  CreateExpenseBody,
+  ExpenseChartQuery,
+  ExpensesQuery,
+  UpdateExpenseBody,
+} from "../middleware/validation";
 import {
   postExpense,
   getExpenses,
@@ -11,11 +17,11 @@ import {
 
 const router = Router();
 
-router.post("/", checkUserToken, validate(Expense), postExpense);
-router.patch("/:expenseId", checkUserToken, patchExpense);
-router.delete("/:expenseId", checkUserToken, deleteExpense);
+router.post("/", checkUserToken, validate(CreateExpenseBody), postExpense);
+router.patch("/:expenseId([1-9]\\d*)", checkUserToken, validate(UpdateExpenseBody), patchExpense);
+router.delete("/:expenseId([1-9]\\d*)", checkUserToken, deleteExpense);
 
-router.get("/chart", checkUserToken, getChartData);
-router.get("/", checkUserToken, getExpenses);
+router.get("/chart", checkUserToken, validate(ExpenseChartQuery), getChartData);
+router.get("/", checkUserToken, validate(ExpensesQuery), getExpenses);
 
 export const expensesRouter = router;

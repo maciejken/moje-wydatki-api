@@ -34,6 +34,8 @@ interface DateFormat {
 
 const intervals: Interval[] = [Interval.Year, Interval.Month, Interval.Day];
 
+export const isDate = (date: string) => !isNaN(new Date(date).getTime());
+
 export const getDatePrecision = (date: string) =>
   date?.split("-").filter(Boolean).length || 0;
 
@@ -79,7 +81,10 @@ const IntervalCountMap = {
 export const getIntervalStartDates = (date: string, unitInterval: Interval) => {
   const startDate = date ? new Date(date) : startOfHistory;
   const countMapper = IntervalCountMap[unitInterval];
-  const count = countMapper(startDate);
+  let count;
+  if (countMapper) {
+    count = countMapper(startDate);
+  }
   const numbers = [];
   if (count) {
     for (let i = 0; i < count; i++) {
