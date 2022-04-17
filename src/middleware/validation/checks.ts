@@ -13,7 +13,8 @@ const ContentTypeHeaderCheck = {
 const isExpenseDate = (date: string) =>
   validator.isLength(date, { min: 10, max: 10 }) && validator.isDate(date);
 
-const isExpenseTitle = (value: string) => validator.isLength(value, { min: 4, max: 64 });
+const isExpenseTitle = (value: string) =>
+  validator.isLength(value, { min: 3, max: 140 }) && value.startsWith("#");
 
 export const CreateExpenseBody = [
   ContentTypeHeaderCheck,

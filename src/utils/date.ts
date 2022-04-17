@@ -117,3 +117,7 @@ export const getYearAndMonthLong = (date: Date) =>
     month: DateString.Long,
     year: DateNumber.Numeric,
   });
+
+export const getWeek = (date: Date) => moment(date).isoWeek();
+
+export const getDay = (date: Date) => moment(date).isoWeekday();

@@ -14,6 +14,8 @@ import {
   getUnitInterval,
   getMonthShort,
   getYearAndMonthLong,
+  getWeek,
+  getDay,
 } from "../utils/date";
 import { LOCALE, CURRENCY as currency } from "../config";
 import { roundNum } from "../utils/nums";
@@ -25,10 +27,10 @@ const getLocalAmount = (amount: number) =>
   });
 
 const IntervalIdMap = {
-  [Interval.Year]: (date: Date) => date.getFullYear(),
+  [Interval.Year]: (date: Date) => "" + date.getFullYear(),
   [Interval.Month]: (date: Date, isLabel: boolean = false) =>
-    isLabel ? getMonthShort(date) : date.getMonth(),
-  [Interval.Day]: (date: Date) => date.getDate(),
+    isLabel ? getMonthShort(date) : "" + date.getMonth(),
+  [Interval.Day]: (date: Date) => "" + date.getDate(),
 };
 
 const IntervalInfoMap = {
@@ -87,23 +89,33 @@ const getChartDataFromDb = async ({
     order: literal("date ASC"),
   });
 
+interface ChartDataPoint {
+  id: string;
+  amount: number;
+  label: string;
+  info: string;
+  week?: number;
+  day?: number;
+}
+
 const getIntervalToChartDataMap =
   (amountByDate: { [key: number]: number }, unitInterval: Interval) =>
   (date: Date) => {
     const idMapper = IntervalIdMap[unitInterval];
-    const id = String(idMapper(date));
+    const data: ChartDataPoint = {} as ChartDataPoint;
+    data.id = String(idMapper(date));
     const amount = amountByDate[date.getTime()] || 0;
-    const roundedAmount = roundNum(amount);
-    const label = idMapper(date, true);
+    data.amount = roundNum(amount);
+    data.label = idMapper(date, true);
     const infoMapper = IntervalInfoMap[unitInterval];
-    const info = infoMapper(date, roundedAmount);
-
-    return { id, amount, label, info };
+    data.info = infoMapper(date, data.amount);
+    if (unitInterval === Interval.Day) {
+      data.week = getWeek(date);
+      data.day = getDay(date);
+    }
+    return { ...data };
   };
 
-// TODO: breaking change - update frontend accordingly
-// e.g. expenses/chart?date=2022-03 (date can be empty)
-// also check/sanitize date if empty (can be empty string)
 export const getExpensesChartData = async (date: string) => {
   const timespan = getTimespan(date);
   const unitInterval = getUnitInterval(date);
