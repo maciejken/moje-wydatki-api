@@ -18,8 +18,8 @@ import {
 const router = Router();
 
 router.post("/", checkUserToken, validate(CreateExpenseBody), postExpense);
-router.patch("/:expenseId([1-9]\\d*)", checkUserToken, validate(UpdateExpenseBody), patchExpense);
-router.delete("/:expenseId([1-9]\\d*)", checkUserToken, deleteExpense);
+router.patch("/:expenseId(\\d+)", checkUserToken, validate(UpdateExpenseBody), patchExpense);
+router.delete("/:expenseId(\\d+)", checkUserToken, deleteExpense);
 
 router.get("/chart", checkUserToken, validate(ExpenseChartQuery), getChartData);
 router.get("/", checkUserToken, validate(ExpensesQuery), getExpenses);
