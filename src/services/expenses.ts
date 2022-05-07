@@ -110,7 +110,9 @@ export const getExpensesChartData = async (date: string) => {
   for (const item of dataFromDb) {
     const timestamp = new Date(item.date).getTime();
     amountByDate[timestamp] = item.amount;
-    totalAmount += item.amount;
+    if (!item.isPrivate) {
+      totalAmount += item.amount;
+    }
   }
   const data = getIntervalsByDate(date);
   const infoMapper = IntervalInfoMap[unitOfTime];
