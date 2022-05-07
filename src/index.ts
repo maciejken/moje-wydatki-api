@@ -3,7 +3,7 @@ import express, { Express, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { ALLOWED_ORIGIN, ALLOWED_USERS, API_PREFIX, HTTP_PORT } from "./config";
 import getLogger from "./lib/getLogger";
-import { authRouter, expensesRouter, usersRouter } from "./routes";
+import { authRouter, expensesRouter, usersRouter, calendarRouter } from "./routes";
 import errorHandler from "./middleware/errors";
 
 const app: Express = express();
@@ -29,6 +29,7 @@ logger.debug(`API prefix is "${API_PREFIX}"`);
 
 app.use(`${API_PREFIX}/auth`, authRouter);
 app.use(`${API_PREFIX}/expenses`, expensesRouter);
+app.use(`${API_PREFIX}/calendar`, calendarRouter);
 app.use(`${API_PREFIX}/users`, usersRouter);
 
 const logRequestError = (req: Request, res: Response, next: NextFunction) => {

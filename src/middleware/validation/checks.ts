@@ -110,7 +110,7 @@ export const ExpensesQuery = [
   },
 ];
 
-export const ExpenseChartQuery = [
+export const DateQuery = [
   {
     in: PartOfRequest.Query,
     name: "date",
